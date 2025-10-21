@@ -21,7 +21,7 @@
 
 ## 데모
 
-GitHub Pages에서 확인: [https://YOUR-USERNAME.github.io/go-by-example/](https://YOUR-USERNAME.github.io/go-by-example/)
+GitHub Pages에서 확인: [https://thatseeai.github.io/go-by-example/](https://thatseeai.github.io/go-by-example/)
 
 ## 시작하기
 
