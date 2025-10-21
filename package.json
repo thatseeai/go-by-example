@@ -7,7 +7,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "update-lessons": "node scripts/generate-lesson-config.js"
   },
   "keywords": [],
   "author": "",

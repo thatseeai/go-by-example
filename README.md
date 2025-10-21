@@ -111,13 +111,28 @@ git push origin main
 14. **13: JSON과 REST** - REST API 구현
 15. **14: 데이터베이스** - database/sql 활용
 
-## 레슨 추가하기
+## 레슨 관리
 
-새로운 레슨을 추가하려면:
+### 레슨 파일 위치
+**모든 레슨은 `public/lessons/` 폴더에만 존재합니다.**
 
+### 기존 레슨 수정
+1. `public/lessons/XX-Lesson-Name.md` 파일 수정
+2. 저장하면 자동으로 반영됨 (빌드 불필요)
+
+### 새 레슨 추가
 1. `public/lessons/` 디렉토리에 `XX-Lesson-Name.md` 형식으로 파일 생성
 2. `public/lessons/TOC.md`에 새 레슨 항목 추가
-3. Markdown 파일에 다음 형식으로 작성:
+3. **자동 설정 업데이트 실행**:
+   ```bash
+   npm run update-lessons
+   ```
+4. 빌드하여 정적 페이지 생성:
+   ```bash
+   npm run build
+   ```
+
+### Markdown 파일 형식:
 
 ```markdown
 # 레슨 제목
