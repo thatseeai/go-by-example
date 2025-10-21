@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import hljs from 'highlight.js';
 
 interface CodeBlockProps {
   code: string;
@@ -9,6 +10,13 @@ interface CodeBlockProps {
 
 export default function CodeBlock({ code, language = 'go' }: CodeBlockProps) {
   const [copied, setCopied] = useState(false);
+  const codeRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (codeRef.current) {
+      hljs.highlightElement(codeRef.current);
+    }
+  }, [code]);
 
   const handleCopy = async () => {
     try {
@@ -43,7 +51,9 @@ export default function CodeBlock({ code, language = 'go' }: CodeBlockProps) {
         )}
       </button>
       <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto">
-        <code className={`language-${language}`}>{code}</code>
+        <code ref={codeRef} className={`language-${language}`}>
+          {code}
+        </code>
       </pre>
     </div>
   );

@@ -1,13 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
 import LessonContent from '@/components/LessonContent';
 import type { TOCItem, LessonContent as LessonContentType } from '@/types';
 import { fetchTOC, fetchLessonContent } from '@/lib/client-markdown';
-
 
 export default function LessonPage() {
   const params = useParams();
@@ -17,9 +16,13 @@ export default function LessonPage() {
   const [tocItems, setTocItems] = useState<TOCItem[]>([]);
   const [lessonContent, setLessonContent] = useState<LessonContentType | null>(null);
   const [loading, setLoading] = useState(true);
+  const fetching = useRef(false);
 
   useEffect(() => {
     async function loadData() {
+      if (fetching.current) return;
+      fetching.current = true;
+
       try {
         setLoading(true);
 
@@ -34,6 +37,7 @@ export default function LessonPage() {
         console.error('Error loading data:', error);
       } finally {
         setLoading(false);
+        fetching.current = false;
       }
     }
 

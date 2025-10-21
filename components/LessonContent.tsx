@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import parse, { domToReact, HTMLReactParserOptions, Element } from 'html-react-parser';
+import CodeBlock from './CodeBlock';
 
 interface LessonContentProps {
   content: string;
@@ -8,86 +9,23 @@ interface LessonContentProps {
   lessonId: string;
 }
 
+const options: HTMLReactParserOptions = {
+  replace: (domNode) => {
+    if (domNode instanceof Element && domNode.name === 'pre') {
+      const codeElement = domNode.children.find(
+        (child) => child instanceof Element && child.name === 'code'
+      ) as Element | undefined;
+
+      if (codeElement) {
+        const codeString = domToReact(codeElement.children) as string;
+        const language = codeElement.attribs.class?.replace('language-', '') || 'go';
+        return <CodeBlock code={codeString} language={language} />;
+      }
+    }
+  },
+};
+
 export default function LessonContent({ content, title, lessonId }: LessonContentProps) {
-  const contentRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!contentRef.current) return;
-
-    const processedButtons: HTMLElement[] = [];
-
-    // Add copy buttons to all code blocks
-    const codeBlocks = contentRef.current.querySelectorAll('pre code');
-    codeBlocks.forEach((block) => {
-      const pre = block.parentElement;
-      if (!pre) return;
-
-      // Skip if already wrapped (check if parent has the marker)
-      if (pre.parentElement?.classList.contains('code-block-wrapper')) {
-        return;
-      }
-
-      // Ensure pre has proper styling
-      pre.className = 'bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto relative group';
-
-      // Create copy button
-      const button = document.createElement('button');
-      button.className = 'absolute top-2 right-2 p-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg opacity-0 group-hover:opacity-100 transition-opacity z-10';
-      button.setAttribute('aria-label', 'Copy code');
-      button.innerHTML = `
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-        </svg>
-      `;
-      
-      button.onclick = async () => {
-        const code = block.textContent || '';
-        try {
-          await navigator.clipboard.writeText(code);
-          button.innerHTML = `
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-            </svg>
-          `;
-          setTimeout(() => {
-            button.innerHTML = `
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-              </svg>
-            `;
-          }, 2000);
-        } catch (error) {
-          console.error('Failed to copy:', error);
-        }
-      };
-      
-      pre.appendChild(button);
-      processedButtons.push(button);
-
-      // Mark the parent as processed
-      const parent = pre.parentElement;
-      if (parent) {
-        parent.classList.add('code-block-wrapper');
-      }
-    });
-
-    // Add anchors to headings
-    const headings = contentRef.current.querySelectorAll('h1, h2, h3, h4, h5, h6');
-    headings.forEach((heading) => {
-      if (!heading.id) {
-        const id = heading.textContent?.toLowerCase().replace(/\s+/g, '-') || '';
-        heading.id = id;
-      }
-    });
-
-    // Cleanup function to remove buttons when component unmounts or content changes
-    return () => {
-      processedButtons.forEach(button => {
-        button.remove();
-      });
-    };
-  }, [content]);
-
   const handleDownload = async () => {
     try {
       const { fetchRawMarkdown } = await import('@/lib/client-markdown');
@@ -131,11 +69,9 @@ export default function LessonContent({ content, title, lessonId }: LessonConten
       </div>
 
       {/* Content */}
-      <div
-        ref={contentRef}
-        className="prose prose-lg dark:prose-invert max-w-none prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-code:text-primary-600 dark:prose-code:text-primary-400 prose-headings:scroll-mt-20"
-        dangerouslySetInnerHTML={{ __html: content }}
-      />
+      <div className="prose prose-lg dark:prose-invert max-w-none prose-code:text-primary-600 dark:prose-code:text-primary-400 prose-headings:scroll-mt-20">
+        {parse(content, options)}
+      </div>
     </div>
   );
 }
