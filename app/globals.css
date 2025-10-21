@@ -1,0 +1,159 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100;
+  }
+}
+
+@layer components {
+  .code-block-wrapper {
+    @apply relative my-4;
+  }
+
+  .code-block-wrapper pre {
+    @apply bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto;
+  }
+
+  .code-block-wrapper code {
+    @apply font-mono text-sm;
+  }
+}
+
+/* Syntax highlighting styles */
+.hljs {
+  @apply bg-gray-900 text-gray-100;
+}
+
+.hljs-comment,
+.hljs-quote {
+  @apply text-gray-500;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-tag {
+  @apply text-blue-400;
+}
+
+.hljs-string,
+.hljs-doctag {
+  @apply text-green-400;
+}
+
+.hljs-title,
+.hljs-section,
+.hljs-selector-id {
+  @apply text-yellow-400;
+}
+
+.hljs-subst {
+  @apply text-gray-100;
+}
+
+.hljs-type,
+.hljs-class .hljs-title {
+  @apply text-cyan-400;
+}
+
+.hljs-number,
+.hljs-literal,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-params {
+  @apply text-orange-400;
+}
+
+.hljs-function,
+.hljs-title.function_ {
+  @apply text-purple-400;
+}
+
+.hljs-attr {
+  @apply text-cyan-300;
+}
+
+.hljs-built_in {
+  @apply text-cyan-400;
+}
+
+/* Prose styling for markdown content */
+.prose {
+  @apply max-w-none;
+}
+
+.prose h1 {
+  @apply text-4xl font-bold mt-8 mb-4;
+}
+
+.prose h2 {
+  @apply text-3xl font-bold mt-8 mb-4;
+}
+
+.prose h3 {
+  @apply text-2xl font-bold mt-6 mb-3;
+}
+
+.prose h4 {
+  @apply text-xl font-bold mt-6 mb-3;
+}
+
+.prose p {
+  @apply my-4 leading-relaxed;
+}
+
+.prose ul,
+.prose ol {
+  @apply my-4 pl-6;
+}
+
+.prose li {
+  @apply my-2;
+}
+
+.prose blockquote {
+  @apply border-l-4 border-primary-500 pl-4 py-2 my-4 italic;
+}
+
+.prose code {
+  @apply bg-gray-200 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm font-mono;
+}
+
+.prose pre code {
+  @apply bg-transparent p-0;
+}
+
+.prose a {
+  @apply text-primary-600 dark:text-primary-400 hover:underline;
+}
+
+.prose table {
+  @apply w-full my-4 border-collapse;
+}
+
+.prose th {
+  @apply bg-gray-100 dark:bg-gray-800 p-2 text-left font-semibold border border-gray-300 dark:border-gray-700;
+}
+
+.prose td {
+  @apply p-2 border border-gray-300 dark:border-gray-700;
+}
+
+/* Details/summary for collapsible sections */
+details {
+  @apply my-4 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg;
+}
+
+summary {
+  @apply cursor-pointer font-semibold hover:text-primary-600 dark:hover:text-primary-400;
+}
+
+details[open] summary {
+  @apply mb-2;
+}
