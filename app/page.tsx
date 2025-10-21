@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
 import type { TOCItem } from '@/types';
+import { fetchTOC } from '@/lib/client-markdown';
 
 export default function HomePage() {
   const router = useRouter();
@@ -14,8 +15,7 @@ export default function HomePage() {
   useEffect(() => {
     async function loadTOC() {
       try {
-        const response = await fetch('/api/toc');
-        const data = await response.json();
+        const data = await fetchTOC();
         setTocItems(data);
       } catch (error) {
         console.error('Failed to load TOC:', error);

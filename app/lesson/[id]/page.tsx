@@ -6,6 +6,8 @@ import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
 import LessonContent from '@/components/LessonContent';
 import type { TOCItem, LessonContent as LessonContentType } from '@/types';
+import { fetchTOC, fetchLessonContent } from '@/lib/client-markdown';
+
 
 export default function LessonPage() {
   const params = useParams();
@@ -22,18 +24,12 @@ export default function LessonPage() {
         setLoading(true);
 
         // Load TOC
-        const tocResponse = await fetch('/api/toc');
-        const tocData = await tocResponse.json();
+        const tocData = await fetchTOC();
         setTocItems(tocData);
 
         // Load lesson content
-        const lessonResponse = await fetch(`/api/lessons/${lessonId}`);
-        if (lessonResponse.ok) {
-          const lessonData = await lessonResponse.json();
-          setLessonContent(lessonData);
-        } else {
-          console.error('Failed to load lesson');
-        }
+        const lessonData = await fetchLessonContent(lessonId);
+        setLessonContent(lessonData);
       } catch (error) {
         console.error('Error loading data:', error);
       } finally {

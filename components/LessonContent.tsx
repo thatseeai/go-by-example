@@ -69,16 +69,22 @@ export default function LessonContent({ content, title, lessonId }: LessonConten
     });
   }, [content]);
 
-  const handleDownload = () => {
-    const blob = new Blob([content], { type: 'text/markdown' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${lessonId}.md`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+  const handleDownload = async () => {
+    try {
+      const { fetchRawMarkdown } = await import('@/lib/client-markdown');
+      const markdown = await fetchRawMarkdown(lessonId);
+      const blob = new Blob([markdown], { type: 'text/markdown' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${lessonId}.md`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Failed to download:', error);
+    }
   };
 
   return (

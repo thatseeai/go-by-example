@@ -19,6 +19,10 @@
 - **Markdown 처리**: Remark, Rehype
 - **구문 강조**: Highlight.js
 
+## 데모
+
+GitHub Pages에서 확인: [https://YOUR-USERNAME.github.io/go-by-example/](https://YOUR-USERNAME.github.io/go-by-example/)
+
 ## 시작하기
 
 ### 1. 의존성 설치
@@ -35,11 +39,25 @@ npm run dev
 
 브라우저에서 [http://localhost:3000](http://localhost:3000)을 열어 확인하세요.
 
-### 3. 프로덕션 빌드
+### 3. 프로덕션 빌드 (정적 export)
 
 ```bash
 npm run build
-npm start
+```
+
+빌드된 정적 파일은 `out/` 폴더에 생성됩니다.
+
+### 4. GitHub Pages에 배포
+
+1. GitHub 저장소 생성
+2. 저장소 Settings > Pages로 이동
+3. Source를 "GitHub Actions"로 선택
+4. 코드를 push하면 자동으로 배포됩니다
+
+```bash
+git add .
+git commit -m "Deploy to GitHub Pages"
+git push origin main
 ```
 
 ## 프로젝트 구조
@@ -47,10 +65,8 @@ npm start
 ```
 .
 ├── app/                    # Next.js 앱 라우터
-│   ├── api/               # API 라우트
-│   │   ├── toc/          # 목차 API
-│   │   └── lessons/      # 레슨 콘텐츠 API
-│   ├── lesson/           # 레슨 페이지
+│   ├── lesson/            # 레슨 페이지
+│   │   └── [id]/         # 동적 라우트
 │   ├── layout.tsx        # 루트 레이아웃
 │   ├── page.tsx          # 홈 페이지
 │   └── globals.css       # 전역 스타일
@@ -60,7 +76,8 @@ npm start
 │   ├── LessonContent.tsx # 레슨 콘텐츠 뷰어
 │   └── CodeBlock.tsx     # 코드 블록 컴포넌트
 ├── lib/                   # 유틸리티 라이브러리
-│   └── markdown.ts       # Markdown 처리 함수
+│   ├── markdown.ts       # 서버 사이드 Markdown 처리
+│   └── client-markdown.ts # 클라이언트 사이드 Markdown 처리
 ├── utils/                 # 유틸리티 함수
 │   └── storage.ts        # 로컬 스토리지 관리
 ├── types/                 # TypeScript 타입 정의
@@ -71,6 +88,8 @@ npm start
 │       ├── 00-Overview.md
 │       ├── 01-Hello-World.md
 │       └── ...
+├── .github/workflows/     # GitHub Actions
+│   └── deploy.yml        # 자동 배포 워크플로우
 └── package.json
 ```
 

@@ -21,6 +21,7 @@
     "eslint": "^9.38.0",
     "eslint-config-next": "^15.5.6",
     "gray-matter": "^4.0.3",
+    "marked": "^16.4.1",
     "next": "^15.5.6",
     "postcss": "^8.5.6",
     "react": "^19.2.0",
