@@ -1,6 +1,6 @@
 'use client';
 
-import parse, { domToReact, HTMLReactParserOptions, Element } from 'html-react-parser';
+import parse, { domToReact, HTMLReactParserOptions, Element, DOMNode } from 'html-react-parser';
 import CodeBlock from './CodeBlock';
 
 interface LessonContentProps {
@@ -17,7 +17,7 @@ const options: HTMLReactParserOptions = {
       ) as Element | undefined;
 
       if (codeElement) {
-        const codeString = domToReact(codeElement.children) as string;
+        const codeString = domToReact(codeElement.children as DOMNode[]) as string;
         const language = codeElement.attribs.class?.replace('language-', '') || 'go';
         return <CodeBlock code={codeString} language={language} />;
       }
