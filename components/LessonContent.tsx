@@ -14,48 +14,60 @@ export default function LessonContent({ content, title, lessonId }: LessonConten
   useEffect(() => {
     if (!contentRef.current) return;
 
+    const processedButtons: HTMLElement[] = [];
+
     // Add copy buttons to all code blocks
     const codeBlocks = contentRef.current.querySelectorAll('pre code');
     codeBlocks.forEach((block) => {
       const pre = block.parentElement;
       if (!pre) return;
 
-      // Create wrapper if not exists
-      if (!pre.parentElement?.classList.contains('code-block-wrapper')) {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'code-block-wrapper relative group my-4';
-        pre.parentNode?.insertBefore(wrapper, pre);
-        wrapper.appendChild(pre);
+      // Skip if already wrapped (check if parent has the marker)
+      if (pre.parentElement?.classList.contains('code-block-wrapper')) {
+        return;
+      }
 
-        // Create copy button
-        const button = document.createElement('button');
-        button.className = 'absolute top-2 right-2 p-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg opacity-0 group-hover:opacity-100 transition-opacity';
-        button.innerHTML = `
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-          </svg>
-        `;
-        button.onclick = async () => {
-          const code = block.textContent || '';
-          try {
-            await navigator.clipboard.writeText(code);
+      // Ensure pre has proper styling
+      pre.className = 'bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto relative group';
+
+      // Create copy button
+      const button = document.createElement('button');
+      button.className = 'absolute top-2 right-2 p-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg opacity-0 group-hover:opacity-100 transition-opacity z-10';
+      button.setAttribute('aria-label', 'Copy code');
+      button.innerHTML = `
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+        </svg>
+      `;
+      
+      button.onclick = async () => {
+        const code = block.textContent || '';
+        try {
+          await navigator.clipboard.writeText(code);
+          button.innerHTML = `
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+          `;
+          setTimeout(() => {
             button.innerHTML = `
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
               </svg>
             `;
-            setTimeout(() => {
-              button.innerHTML = `
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-                </svg>
-              `;
-            }, 2000);
-          } catch (error) {
-            console.error('Failed to copy:', error);
-          }
-        };
-        wrapper.appendChild(button);
+          }, 2000);
+        } catch (error) {
+          console.error('Failed to copy:', error);
+        }
+      };
+      
+      pre.appendChild(button);
+      processedButtons.push(button);
+
+      // Mark the parent as processed
+      const parent = pre.parentElement;
+      if (parent) {
+        parent.classList.add('code-block-wrapper');
       }
     });
 
@@ -67,6 +79,13 @@ export default function LessonContent({ content, title, lessonId }: LessonConten
         heading.id = id;
       }
     });
+
+    // Cleanup function to remove buttons when component unmounts or content changes
+    return () => {
+      processedButtons.forEach(button => {
+        button.remove();
+      });
+    };
   }, [content]);
 
   const handleDownload = async () => {
