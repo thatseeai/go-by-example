@@ -6,23 +6,34 @@ import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
 import type { TOCItem } from '@/types';
 import { fetchTOC } from '@/lib/client-markdown';
+import { getLanguage } from '@/utils/storage';
+import { getTranslations, type Language } from '@/lib/i18n';
 
 export default function HomePage() {
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [tocItems, setTocItems] = useState<TOCItem[]>([]);
+  const [currentLanguage, setCurrentLanguage] = useState<Language>('ko');
 
   useEffect(() => {
-    async function loadTOC() {
-      try {
-        const data = await fetchTOC();
-        setTocItems(data);
-      } catch (error) {
-        console.error('Failed to load TOC:', error);
-      }
-    }
-    loadTOC();
+    const language = getLanguage();
+    setCurrentLanguage(language);
+    loadTOC(language);
   }, []);
+
+  const loadTOC = async (language: Language) => {
+    try {
+      const data = await fetchTOC(language);
+      setTocItems(data);
+    } catch (error) {
+      console.error('Failed to load TOC:', error);
+    }
+  };
+
+  const handleLanguageChange = (language: Language) => {
+    setCurrentLanguage(language);
+    loadTOC(language);
+  };
 
   const startLearning = () => {
     if (tocItems.length > 0) {
@@ -30,9 +41,14 @@ export default function HomePage() {
     }
   };
 
+  const t = getTranslations(currentLanguage);
+
   return (
     <div className="min-h-screen flex flex-col">
-      <Header onMenuClick={() => setSidebarOpen(true)} />
+      <Header 
+        onMenuClick={() => setSidebarOpen(true)} 
+        onLanguageChange={handleLanguageChange}
+      />
 
       <div className="flex flex-1">
         <Sidebar
@@ -49,18 +65,18 @@ export default function HomePage() {
               </div>
 
               <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-4">
-                Go 예제로 배우기
+                {t.title}
               </h1>
 
               <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">
-                실습 중심의 Go 언어 학습 서비스
+                {t.subtitle}
               </p>
 
               <button
                 onClick={startLearning}
                 className="px-8 py-4 bg-primary-500 hover:bg-primary-600 text-white text-lg font-semibold rounded-lg transition-colors shadow-lg hover:shadow-xl"
               >
-                학습 시작하기
+                {t.startLearning}
               </button>
             </div>
 
@@ -72,10 +88,10 @@ export default function HomePage() {
                   </svg>
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                  실습 중심
+                  {t.handsOnTitle}
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400">
-                  모든 레슨에 실행 가능한 예제 코드와 연습 문제를 제공합니다.
+                  {t.handsOnDescription}
                 </p>
               </div>
 
@@ -86,10 +102,10 @@ export default function HomePage() {
                   </svg>
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                  체계적인 학습
+                  {t.systematicTitle}
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400">
-                  기초부터 고급까지 단계별로 구성된 15개의 레슨을 제공합니다.
+                  {t.systematicDescription}
                 </p>
               </div>
 
@@ -100,54 +116,54 @@ export default function HomePage() {
                   </svg>
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                  진행률 추적
+                  {t.progressTitle}
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400">
-                  학습 진행 상황을 추적하고 완료한 레슨을 체크할 수 있습니다.
+                  {t.progressDescription}
                 </p>
               </div>
             </div>
 
             <div className="mt-16 p-8 bg-gradient-to-r from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-800/20 rounded-lg">
               <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-                학습 내용
+                {t.learningContentTitle}
               </h2>
               <ul className="grid md:grid-cols-2 gap-4 text-gray-700 dark:text-gray-300">
                 <li className="flex items-start gap-2">
                   <svg className="w-6 h-6 text-primary-600 dark:text-primary-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
-                  <span>기본 문법과 타입 시스템</span>
+                  <span>{t.basicSyntax}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <svg className="w-6 h-6 text-primary-600 dark:text-primary-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
-                  <span>함수와 메서드</span>
+                  <span>{t.functionsAndMethods}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <svg className="w-6 h-6 text-primary-600 dark:text-primary-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
-                  <span>인터페이스와 구조체</span>
+                  <span>{t.interfacesAndStructs}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <svg className="w-6 h-6 text-primary-600 dark:text-primary-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
-                  <span>동시성 프로그래밍 (고루틴, 채널)</span>
+                  <span>{t.concurrency}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <svg className="w-6 h-6 text-primary-600 dark:text-primary-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
-                  <span>웹 서버와 REST API</span>
+                  <span>{t.webServerAndAPI}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <svg className="w-6 h-6 text-primary-600 dark:text-primary-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
-                  <span>데이터베이스 연동</span>
+                  <span>{t.databaseIntegration}</span>
                 </li>
               </ul>
             </div>

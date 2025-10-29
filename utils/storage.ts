@@ -1,9 +1,11 @@
 'use client';
 
 import type { Progress } from '@/types';
+import type { Language } from '@/lib/i18n';
 
 const PROGRESS_KEY = 'go-by-example-progress';
 const THEME_KEY = 'go-by-example-theme';
+const LANGUAGE_KEY = 'go-by-example-language';
 
 export function getProgress(): Progress {
   if (typeof window === 'undefined') {
@@ -69,5 +71,33 @@ export function setTheme(theme: 'light' | 'dark'): void {
     document.documentElement.classList.toggle('dark', theme === 'dark');
   } catch (error) {
     console.error('Error saving theme:', error);
+  }
+}
+
+export function getLanguage(): Language {
+  if (typeof window === 'undefined') {
+    return 'ko';
+  }
+
+  try {
+    const stored = localStorage.getItem(LANGUAGE_KEY);
+    if (stored === 'ko' || stored === 'en') {
+      return stored;
+    }
+  } catch (error) {
+    console.error('Error loading language:', error);
+  }
+
+  return 'ko';
+}
+
+export function setLanguage(language: Language): void {
+  if (typeof window === 'undefined') return;
+
+  try {
+    localStorage.setItem(LANGUAGE_KEY, language);
+    document.documentElement.lang = language;
+  } catch (error) {
+    console.error('Error saving language:', error);
   }
 }

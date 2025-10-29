@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import type { TOCItem } from '@/types';
-import { getProgress, toggleLessonComplete } from '@/utils/storage';
+import { getProgress, toggleLessonComplete, getLanguage } from '@/utils/storage';
+import { getTranslations } from '@/lib/i18n';
 
 interface SidebarProps {
   items: TOCItem[];
@@ -15,6 +16,8 @@ interface SidebarProps {
 export default function Sidebar({ items, currentLessonId, isOpen, onClose }: SidebarProps) {
   const [completedLessons, setCompletedLessons] = useState<Record<string, boolean>>({});
   const [searchQuery, setSearchQuery] = useState('');
+  const currentLanguage = getLanguage();
+  const t = getTranslations(currentLanguage);
 
   useEffect(() => {
     const progress = getProgress();
@@ -52,7 +55,7 @@ export default function Sidebar({ items, currentLessonId, isOpen, onClose }: Sid
           {/* Header */}
           <div className="p-4 border-b border-gray-200 dark:border-gray-800">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">목차</h2>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">{t.tableOfContents}</h2>
               <button
                 onClick={onClose}
                 className="lg:hidden p-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
@@ -67,7 +70,7 @@ export default function Sidebar({ items, currentLessonId, isOpen, onClose }: Sid
             {/* Search */}
             <input
               type="text"
-              placeholder="레슨 검색..."
+              placeholder={t.searchPlaceholder}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
@@ -120,7 +123,10 @@ export default function Sidebar({ items, currentLessonId, isOpen, onClose }: Sid
           {/* Progress */}
           <div className="p-4 border-t border-gray-200 dark:border-gray-800">
             <div className="text-sm text-gray-600 dark:text-gray-400">
-              진행률: {Object.values(completedLessons).filter(Boolean).length} / {items.length}
+              {currentLanguage === 'ko' 
+                ? `진행률: ${Object.values(completedLessons).filter(Boolean).length} / ${items.length}`
+                : `Progress: ${Object.values(completedLessons).filter(Boolean).length} / ${items.length}`
+              }
             </div>
             <div className="mt-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
               <div

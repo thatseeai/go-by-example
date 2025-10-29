@@ -1,6 +1,7 @@
 'use client';
 
 import type { TOCItem, LessonContent } from '@/types';
+import type { Language } from '@/lib/i18n';
 
 const basePath = process.env.NODE_ENV === 'production' ? '/go-by-example' : '';
 
@@ -23,9 +24,10 @@ const lessonFileMapping: Record<string, string> = {
   '14': '14-Database',
 };
 
-export async function fetchTOC(): Promise<TOCItem[]> {
+export async function fetchTOC(language: Language = 'ko'): Promise<TOCItem[]> {
   try {
-    const response = await fetch(`${basePath}/lessons/TOC.md`);
+    const tocFile = language === 'en' ? 'TOC-en.md' : 'TOC.md';
+    const response = await fetch(`${basePath}/lessons/${tocFile}`);
     const content = await response.text();
     const lines = content.split('\n');
 
@@ -56,9 +58,10 @@ export async function fetchTOC(): Promise<TOCItem[]> {
   }
 }
 
-export async function fetchLessonContent(id: string): Promise<LessonContent | null> {
+export async function fetchLessonContent(id: string, language: Language = 'ko'): Promise<LessonContent | null> {
   try {
-    const response = await fetch(`${basePath}/lessons/${id}.md`);
+    const lessonFile = language === 'en' ? `${id}-en.md` : `${id}.md`;
+    const response = await fetch(`${basePath}/lessons/${lessonFile}`);
     if (!response.ok) {
       return null;
     }
@@ -96,9 +99,10 @@ export async function fetchLessonContent(id: string): Promise<LessonContent | nu
   }
 }
 
-export async function fetchRawMarkdown(id: string): Promise<string> {
+export async function fetchRawMarkdown(id: string, language: Language = 'ko'): Promise<string> {
   try {
-    const response = await fetch(`${basePath}/lessons/${id}.md`);
+    const lessonFile = language === 'en' ? `${id}-en.md` : `${id}.md`;
+    const response = await fetch(`${basePath}/lessons/${lessonFile}`);
     return await response.text();
   } catch (error) {
     console.error(`Error loading raw markdown for ${id}:`, error);

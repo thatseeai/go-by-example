@@ -2,6 +2,8 @@
 
 import parse, { domToReact, HTMLReactParserOptions, Element, DOMNode } from 'html-react-parser';
 import CodeBlock from './CodeBlock';
+import { getLanguage } from '@/utils/storage';
+import { getTranslations } from '@/lib/i18n';
 
 interface LessonContentProps {
   content: string;
@@ -26,15 +28,19 @@ const options: HTMLReactParserOptions = {
 };
 
 export default function LessonContent({ content, title, lessonId }: LessonContentProps) {
+  const language = getLanguage();
+  const t = getTranslations(language);
+
   const handleDownload = async () => {
     try {
       const { fetchRawMarkdown } = await import('@/lib/client-markdown');
-      const markdown = await fetchRawMarkdown(lessonId);
+      const markdown = await fetchRawMarkdown(lessonId, language);
       const blob = new Blob([markdown], { type: 'text/markdown' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${lessonId}.md`;
+      const suffix = language === 'en' ? '-en' : '';
+      a.download = `${lessonId}${suffix}.md`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -63,7 +69,7 @@ export default function LessonContent({ content, title, lessonId }: LessonConten
                 d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
               />
             </svg>
-            <span className="hidden sm:inline">다운로드</span>
+            <span className="hidden sm:inline">{t.download}</span>
           </button>
         </div>
       </div>

@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react';
 import hljs from 'highlight.js';
+import { getLanguage } from '@/utils/storage';
+import { getTranslations } from '@/lib/i18n';
 
 interface CodeBlockProps {
   code: string;
@@ -11,6 +13,8 @@ interface CodeBlockProps {
 export default function CodeBlock({ code, language = 'go' }: CodeBlockProps) {
   const [copied, setCopied] = useState(false);
   const codeRef = useRef<HTMLElement>(null);
+  const currentLanguage = getLanguage();
+  const t = getTranslations(currentLanguage);
 
   useEffect(() => {
     if (codeRef.current) {
@@ -33,7 +37,7 @@ export default function CodeBlock({ code, language = 'go' }: CodeBlockProps) {
       <button
         onClick={handleCopy}
         className="absolute top-2 right-2 p-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
-        aria-label="Copy code"
+        aria-label={t.copyCode}
       >
         {copied ? (
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

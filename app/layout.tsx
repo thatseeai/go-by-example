@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Go 예제로 배우기',
-  description: '실습 중심 Go 언어 학습 서비스',
+  title: 'Go 예제로 배우기 | Go by Example',
+  description: '실습 중심 Go 언어 학습 서비스 | Hands-on Go language learning service',
 };
 
 export default function RootLayout({

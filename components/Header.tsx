@@ -2,21 +2,27 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { getTheme, setTheme } from '@/utils/storage';
+import { getTheme, setTheme, getLanguage, setLanguage } from '@/utils/storage';
+import { getTranslations, type Language } from '@/lib/i18n';
 
 interface HeaderProps {
   onMenuClick: () => void;
+  onLanguageChange?: (language: Language) => void;
 }
 
-export default function Header({ onMenuClick }: HeaderProps) {
+export default function Header({ onMenuClick, onLanguageChange }: HeaderProps) {
   const [currentTheme, setCurrentTheme] = useState<'light' | 'dark'>('light');
+  const [currentLanguage, setCurrentLanguage] = useState<Language>('ko');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
     const theme = getTheme();
+    const language = getLanguage();
     setCurrentTheme(theme);
+    setCurrentLanguage(language);
     document.documentElement.classList.toggle('dark', theme === 'dark');
+    document.documentElement.lang = language;
   }, []);
 
   const toggleTheme = () => {
@@ -24,6 +30,15 @@ export default function Header({ onMenuClick }: HeaderProps) {
     setCurrentTheme(newTheme);
     setTheme(newTheme);
   };
+
+  const toggleLanguage = () => {
+    const newLanguage = currentLanguage === 'ko' ? 'en' : 'ko';
+    setCurrentLanguage(newLanguage);
+    setLanguage(newLanguage);
+    onLanguageChange?.(newLanguage);
+  };
+
+  const t = getTranslations(currentLanguage);
 
   if (!mounted) {
     return null;
@@ -51,21 +66,30 @@ export default function Header({ onMenuClick }: HeaderProps) {
               </div>
               <div>
                 <h1 className="text-lg font-bold text-gray-900 dark:text-white">
-                  Go 예제로 배우기
+                  {t.title}
                 </h1>
                 <p className="text-xs text-gray-600 dark:text-gray-400">
-                  실습 중심 Go 언어 학습
+                  {t.subtitle}
                 </p>
               </div>
             </Link>
           </div>
 
-          {/* Right: Theme toggle */}
-          <button
-            onClick={toggleTheme}
-            className="p-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-            aria-label="Toggle theme"
-          >
+          {/* Right: Language and Theme toggles */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={toggleLanguage}
+              className="p-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-sm font-medium"
+              aria-label={t.toggleLanguage}
+            >
+              {currentLanguage === 'ko' ? 'EN' : '한국어'}
+            </button>
+            
+            <button
+              onClick={toggleTheme}
+              className="p-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              aria-label={t.toggleTheme}
+            >
             {currentTheme === 'light' ? (
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -85,7 +109,8 @@ export default function Header({ onMenuClick }: HeaderProps) {
                 />
               </svg>
             )}
-          </button>
+            </button>
+          </div>
         </div>
       </div>
     </header>
